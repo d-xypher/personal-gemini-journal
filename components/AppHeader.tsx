@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { signOut } from "firebase/auth";
+import { useState } from "react";
 import { auth } from "@/lib/firebase";
 
 type AppHeaderProps = {
@@ -16,6 +17,8 @@ export default function AppHeader({
   active,
   email,
 }: AppHeaderProps) {
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
   async function handleSignOut() {
     await signOut(auth);
     window.location.href = "/";
@@ -123,22 +126,93 @@ export default function AppHeader({
             AI Mirror
           </Link>
 
-          <button
-            onClick={handleDeleteAccount}
-            className="min-h-12 border-[3px] border-[#2d2d2d] bg-white px-4 py-2 shadow-[3px_3px_0px_0px_#2d2d2d] transition-transform duration-100 hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-[#ff4d4d] hover:text-white active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
-            style={{ borderRadius: wobbly }}
-          >
-            Delete account
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setSettingsOpen((open) => !open)}
+              className="min-h-12 border-[3px] border-[#2d2d2d] bg-white px-4 py-2 shadow-[3px_3px_0px_0px_#2d2d2d] transition-transform duration-100 hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-[#fff9c4] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+              style={{ borderRadius: wobbly }}
+              aria-expanded={settingsOpen}
+              aria-haspopup="menu"
+            >
+              ⚙️ Settings
+            </button>
 
-          <button
-            onClick={handleSignOut}
-            className="min-h-12 border-[3px] border-[#2d2d2d] bg-white px-4 py-2 shadow-[3px_3px_0px_0px_#2d2d2d] transition-transform duration-100 hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-[#ff4d4d] hover:text-white active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
-            style={{ borderRadius: wobbly }}
-            aria-label={`Sign out${email ? ` ${email}` : ""}`}
-          >
-            Sign out
-          </button>
+            {settingsOpen && (
+              <div
+                className="absolute right-0 top-14 z-50 w-56 border-[3px] border-[#2d2d2d] bg-white p-2 shadow-[5px_5px_0px_0px_#2d2d2d]"
+                style={{ borderRadius: wobbly }}
+                role="menu"
+              >
+                <button
+                  onClick={async () => {
+                    setSettingsOpen(false);
+
+                    try {
+                      const currentUser = auth.currentUser;
+
+                      if (!currentUser) {
+                        window.location.href = "/";
+                        return;
+                      }
+
+                      const idToken = await currentUser.getIdToken();
+
+                      const response = await fetch("/api/entries/export", {
+                        headers: {
+                          Authorization: `Bearer ${idToken}`,
+                        },
+                      });
+
+                      if (!response.ok) {
+                        throw new Error("Export failed");
+                      }
+
+                      const blob = await response.blob();
+                      const url = URL.createObjectURL(blob);
+                      const link = document.createElement("a");
+
+                      link.href = url;
+                      link.download = "personal-gemini-journal.json";
+                      document.body.appendChild(link);
+                      link.click();
+                      link.remove();
+                      URL.revokeObjectURL(url);
+                    } catch (error) {
+                      console.error("Journal export failed:", error);
+                      window.alert("Unable to export your journal. Please try again.");
+                    }
+                  }}
+                  className="w-full px-4 py-3 text-left text-lg hover:bg-[#fff9c4]"
+                  role="menuitem"
+                >
+                  ↓ Export JSON
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSettingsOpen(false);
+                    void handleDeleteAccount();
+                  }}
+                  className="w-full px-4 py-3 text-left text-lg hover:bg-[#ff4d4d] hover:text-white"
+                  role="menuitem"
+                >
+                  🗑 Delete account
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSettingsOpen(false);
+                    void handleSignOut();
+                  }}
+                  className="w-full px-4 py-3 text-left text-lg hover:bg-[#e5e0d8]"
+                  role="menuitem"
+                  aria-label={`Sign out${email ? ` ${email}` : ""}`}
+                >
+                  ↪ Sign out
+                </button>
+              </div>
+            )}
+          </div>
         </nav>
       </div>
     </header>
