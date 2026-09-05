@@ -37,14 +37,18 @@ export async function DELETE(request: NextRequest) {
 
     const userRef = adminDb.collection("users").doc(uid);
 
+    // Delete all known user-owned subcollections first.
     await deleteCollection(userRef.collection("entries"));
     await deleteCollection(userRef.collection("patterns"));
 
+    // Delete distributed rate-limit state.
     await adminDb.collection("rateLimits").doc(`chat:${uid}`).delete();
     await adminDb.collection("rateLimits").doc(`mirror:${uid}`).delete();
 
+    // Delete the user document itself.
     await userRef.delete();
 
+    // Finally delete the Firebase Authentication account.
     await adminAuth.deleteUser(uid);
 
     return NextResponse.json({
