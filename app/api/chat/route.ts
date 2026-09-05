@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     const uid = decodedToken.uid;
 
-    const rateLimit = checkRateLimit(`chat:${uid}`);
+    const rateLimit = await checkRateLimit(`chat:${uid}`);
 
     if (!rateLimit.allowed) {
       return NextResponse.json(

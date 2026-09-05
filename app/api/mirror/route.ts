@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const idToken = authHeader.substring("Bearer ".length);
     const decodedToken = await adminAuth.verifyIdToken(idToken);
 
-    const rateLimit = checkRateLimit(`mirror:${decodedToken.uid}`);
+    const rateLimit = await checkRateLimit(`mirror:${decodedToken.uid}`);
 
     if (!rateLimit.allowed) {
       return NextResponse.json(
