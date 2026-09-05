@@ -16,11 +16,8 @@ export default function JournalPage() {
   const [authLoading, setAuthLoading] = useState(true);
   const [content, setContent] = useState("");
   const [reflection, setReflection] = useState("");
-  const [mirror, setMirror] = useState("");
   const [loading, setLoading] = useState(false);
-  const [mirrorLoading, setMirrorLoading] = useState(false);
   const [error, setError] = useState("");
-  const [mirrorError, setMirrorError] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -85,46 +82,6 @@ export default function JournalPage() {
     }
   }
 
-  async function generateMirror() {
-    if (mirrorLoading) return;
-
-    setMirrorLoading(true);
-    setMirrorError("");
-
-    try {
-      const currentUser = auth.currentUser;
-
-      if (!currentUser) {
-        window.location.href = "/";
-        return;
-      }
-
-      const idToken = await currentUser.getIdToken();
-
-      const response = await fetch("/api/mirror", {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Unable to generate your AI Mirror");
-      }
-
-      setMirror(data.mirror || "");
-    } catch (err) {
-      console.error(err);
-      setMirrorError(
-        err instanceof Error
-          ? err.message
-          : "Something went wrong. Please try again."
-      );
-    } finally {
-      setMirrorLoading(false);
-    }
-  }
 
   if (authLoading || !user) {
     return (
@@ -250,35 +207,17 @@ export default function JournalPage() {
                 </p>
 
                 <button
-                  onClick={generateMirror}
-                  disabled={mirrorLoading}
+                  onClick={() => { window.location.href = "/mirror"; }}
                   className="mt-5 w-full min-h-12 border-[3px] border-[#2d2d2d] bg-white px-4 py-2 font-sans text-lg font-bold shadow-[3px_3px_0px_0px_#2d2d2d] transition-transform duration-100 hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-[#ff4d4d] hover:text-white disabled:opacity-50"
                   style={{ borderRadius: wobblyMd }}
                 >
-                  {mirrorLoading ? "Looking in the mirror..." : "Open AI Mirror"}
+                  Open AI Mirror
                 </button>
 
-                {mirrorError && (
-                  <p className="mt-4 font-sans text-sm text-[#ff4d4d]">
-                    {mirrorError}
-                  </p>
-                )}
+
               </section>
 
-              {mirror && (
-                <section
-                  className="border-[3px] border-[#2d2d2d] bg-white p-5 shadow-[5px_5px_0px_0px_#2d2d2d]"
-                  style={{ borderRadius: wobbly }}
-                >
-                  <p className="mb-3 font-sans text-sm font-bold uppercase tracking-[0.15em] text-[#2d5da1]">
-                    Mirror notes
-                  </p>
-
-                  <div className="whitespace-pre-wrap font-sans text-lg leading-relaxed">
-                    {mirror}
-                  </div>
-                </section>
-              )}
+        
             </aside>
           </div>
         </section>
