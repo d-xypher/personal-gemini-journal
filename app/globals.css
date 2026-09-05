@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fdfbf7;
+  --foreground: #2d2d2d;
+  --paper: #ffffff;
+  --muted: #e5e0d8;
+  --accent: #ff4d4d;
+  --blue: #2d5da1;
+  --border: #2d2d2d;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-paper: var(--paper);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-blue: var(--blue);
+  --color-border: var(--border);
+
+  --font-sans: "Patrick Hand", "Comic Sans MS", cursive;
+  --font-heading: "Kalam", "Comic Sans MS", cursive;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--background);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: var(--background);
+  background-image: radial-gradient(
+    var(--muted) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+  color: var(--foreground);
+  font-family: "Patrick Hand", "Comic Sans MS", cursive;
+}
+
+button,
+textarea,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+::selection {
+  background: var(--accent);
+  color: white;
+}
