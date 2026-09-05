@@ -15,9 +15,6 @@ The project was designed as a production-oriented Google Cloud application, with
 **Production:**  
 https://personal-gemini-journal-597106941716.asia-south1.run.app/
 
-**Source:**  
-https://github.com/d-xypher/personal-gemini-journal
-
 ---
 
 ## The idea
@@ -247,7 +244,7 @@ This gives users both **data portability** and **data deletion** rather than mak
                                     │
                                     ▼
                     ┌────────────────────────────┐
-                    │         Cloud Run           │
+                    │         Cloud Run          │
                     │                            │
                     │ Next.js frontend + API     │
                     │                            │
@@ -298,7 +295,7 @@ AI Mirror follows the same authentication and rate-limiting boundary, then reads
 # Technology
 
 | Layer                 | Technology                                  |
-| --------------------- | -------------------------------------------- |
+| --------------------- | --------------------------------------------|
 | Frontend              | Next.js + TypeScript                        |
 | UI                    | Tailwind CSS + custom CSS                   |
 | Authentication        | Firebase Authentication                     |
@@ -673,7 +670,5 @@ Personal Gemini Journal explores that space between journaling and self-reflecti
 ## Built with
 
 **Next.js · Firebase · Firestore · Gemini · Secret Manager · Cloud Run · TypeScript**
-
-Built for the Google Cloud / Cloud Run AI application challenge.
 
 **#AccelerateAIwithCloudRun**
