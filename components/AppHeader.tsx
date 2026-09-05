@@ -21,6 +21,44 @@ export default function AppHeader({
     window.location.href = "/";
   }
 
+  async function handleDeleteAccount() {
+    const confirmed = window.confirm(
+      "Delete your account and all journal data? This cannot be undone."
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      const currentUser = auth.currentUser;
+
+      if (!currentUser) {
+        window.location.href = "/";
+        return;
+      }
+
+      const idToken = await currentUser.getIdToken();
+
+      const response = await fetch("/api/account/delete", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Account deletion failed");
+      }
+
+      await signOut(auth);
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Account deletion failed:", error);
+      window.alert("Unable to delete your account. Please try again.");
+    }
+  }
+
   return (
     <header className="relative border-b-[3px] border-dashed border-[#2d2d2d] pb-5">
       <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
@@ -84,6 +122,14 @@ export default function AppHeader({
           >
             AI Mirror
           </Link>
+
+          <button
+            onClick={handleDeleteAccount}
+            className="min-h-12 border-[3px] border-[#2d2d2d] bg-white px-4 py-2 shadow-[3px_3px_0px_0px_#2d2d2d] transition-transform duration-100 hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-[#ff4d4d] hover:text-white active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+            style={{ borderRadius: wobbly }}
+          >
+            Delete account
+          </button>
 
           <button
             onClick={handleSignOut}
