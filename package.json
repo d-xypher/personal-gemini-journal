@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:security": "firebase emulators:exec --only firestore \"vitest run tests/firestore.rules.test.ts\""
+    "test:security": "firebase emulators:exec --only firestore \"vitest run tests/firestore.rules.test.ts tests/prompt-injection.test.ts\""
   },
   "dependencies": {
     "@google/genai": "^2.21.0",
